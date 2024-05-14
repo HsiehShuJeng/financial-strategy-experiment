@@ -5,4 +5,7 @@
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+
+jupyter lab
+jupyter lab build
 ```
