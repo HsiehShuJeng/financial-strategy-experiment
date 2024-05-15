@@ -74,31 +74,31 @@ def update_holdings(spark: SparkSession):
 
 def calculate_returns(spark: SparkSession):
     """
-    Calculate daily and cumulative returns based on the buy/sell actions and holdings.
+    Calculate monthly and cumulative returns based on the buy/sell actions and holdings.
 
     Args:
         spark (SparkSession): The Spark session.
 
     Returns:
-        DataFrame: A Spark DataFrame containing the stock data with calculated daily and cumulative returns.
+        DataFrame: A Spark DataFrame containing the stock data with calculated monthly and cumulative returns.
     """
     returns_query = """
         SELECT *,
                CASE
-                   WHEN action = 'sell' THEN (Close - LAG(Close, 1) OVER (PARTITION BY year ORDER BY Date)) * holdings
+                   WHEN action = 'sell' THEN (close - LAG(close, 1) OVER (ORDER BY date)) * holdings
                    ELSE 0
-               END AS daily_return
+               END AS monthly_return
         FROM stock_with_strategy
-        ORDER BY Date
+        ORDER BY date
     """
     result_with_returns = spark.sql(returns_query)
     result_with_returns.createOrReplaceTempView("stock_with_returns")
 
     cumulative_returns_query = """
         SELECT *,
-               SUM(daily_return) OVER (ORDER BY Date) AS cumulative_return
+               SUM(monthly_return) OVER (ORDER BY date) AS cumulative_return
         FROM stock_with_returns
-        ORDER BY `year` DESC, Date DESC
+        ORDER BY year DESC, date DESC
     """
     result_with_cumulative_returns = spark.sql(cumulative_returns_query)
     return result_with_cumulative_returns

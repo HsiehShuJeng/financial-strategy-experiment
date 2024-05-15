@@ -70,6 +70,19 @@ After executing, its generated output will be similar as the following under the
 │       └── part-00000-04076d84-18a8-4894-8e99-43eedeebb1ad-c000.csv
 ```
 
+## Thoughts
+1. **Calculating Moving Average**
+    * Defined a SQL query to calculate the 12-month moving average of the closing prices.
+    * Created a temporary view for the data with the calculated moving average.
+2. **Defining Actions**
+    * Added a column to define actions (buy, sell, or hold) based on the comparison between the closing price and the moving average.
+3. **Updating Holdings**
+    * Calculated the cumulative holdings based on the buy/sell actions.
+    * Defined a window function to sum the holdings over time.
+4. **Calculating Returns**
+    * Calculated returns based on the difference between current and previous closing prices when a sell action is performed.
+    * Computed cumulative returns to assess the overall performance of the strategy.
+
 ## Steps to Improve and Validate the Strategy
 1. **Experiment with Parameters**  
     Try different lengths for the moving average and see how they impact performance.
