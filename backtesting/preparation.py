@@ -2,26 +2,36 @@ import yfinance as yf
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, to_date, year
 
+# def fetch_monthly_data(ticker):
+#     stock = yf.Ticker(ticker)
+#     hist = stock.history(period="max")
+
+#     monthly_data = (
+#         hist.resample("ME")
+#         .agg(
+#             {
+#                 "Open": "first",
+#                 "High": "max",
+#                 "Low": "min",
+#                 "Close": "last",
+#                 "Volume": "sum",
+#             }
+#         )
+#         .dropna()
+#     )
+
+#     return monthly_data
+
 
 def fetch_monthly_data(ticker):
     stock = yf.Ticker(ticker)
     hist = stock.history(period="max")
 
-    monthly_data = (
-        hist.resample("ME")
-        .agg(
-            {
-                "Open": "first",
-                "High": "max",
-                "Low": "min",
-                "Close": "last",
-                "Volume": "sum",
-            }
-        )
-        .dropna()
-    )
+    # 添加 Year 和 Month 列
+    hist["Year"] = hist.index.year
+    hist["Month"] = hist.index.month
 
-    return monthly_data
+    return hist
 
 
 def save_to_csv(data, filename):
