@@ -1,7 +1,7 @@
 # financial-strategy-experiment
 
 
-# Development
+## Development
 ```bash
 python -m venv .venv
 source .venv/bin/activate
@@ -69,3 +69,17 @@ After executing, its generated output will be similar as the following under the
 │       ├── _SUCCESS
 │       └── part-00000-04076d84-18a8-4894-8e99-43eedeebb1ad-c000.csv
 ```
+
+## Steps to Improve and Validate the Strategy
+1. **Experiment with Parameters**  
+    Try different lengths for the moving average and see how they impact performance.
+2. **Include Transaction Costs**  
+    Incorporate realistic transaction costs into your backtesting to get a more accurate picture of potential returns.
+3. **Test on Different Timeframes**
+    Backtest the strategy on different historical periods to see if the results are consistent.
+4. **Analyze Drawdowns**
+    Look at the drawdowns (peak-to-trough declines) to understand the risk profile of the strategy.
+5. **Compare with Benchmarks**  
+    Compare the strategy’s performance with a relevant benchmark, like a buy-and-hold strategy, to evaluate its relative performance.
+6. **Robustness Testing** 
+    Use techniques like walk-forward optimization and Monte Carlo simulation to test the robustness of the strategy.
