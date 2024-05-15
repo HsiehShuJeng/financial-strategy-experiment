@@ -34,12 +34,13 @@ def add_actions(spark: SparkSession):
     """
     actions_query = """
         SELECT *,
+               LAG(Close, 1) OVER (ORDER BY Date) AS prev_close,
+               LAG(moving_avg, 1) OVER (ORDER BY Date) AS prev_moving_avg,
                CASE
-                   WHEN Close >= moving_avg THEN 'buy'
-                   WHEN Close < moving_avg THEN 'sell'
+                   WHEN LAG(Close, 1) OVER (ORDER BY Date) >= LAG(moving_avg, 1) OVER (ORDER BY Date) THEN 'buy'
+                   WHEN LAG(Close, 1) OVER (ORDER BY Date) < LAG(moving_avg, 1) OVER (ORDER BY Date) THEN 'sell'
                    ELSE ''
-               END AS action,
-               0 AS initial_holdings
+               END AS action
         FROM stock_with_moving_avg
     """
     result_with_actions = spark.sql(actions_query)
@@ -65,7 +66,7 @@ def update_holdings(spark: SparkSession):
                        ELSE 0
                    END) OVER (ORDER BY Date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS holdings
         FROM stock_with_actions
-        ORDER BY `year` DESC, Date DESC
+        ORDER BY Date
     """
     result_with_strategy = spark.sql(holdings_query)
     result_with_strategy.createOrReplaceTempView("stock_with_strategy")
