@@ -2,11 +2,20 @@ from pyspark.sql import SparkSession
 
 
 def calculate_moving_average(spark: SparkSession):
+    """
+    Calculate the 12-month moving average for the stock prices.
+
+    Args:
+        spark (SparkSession): The Spark session.
+
+    Returns:
+        DataFrame: A Spark DataFrame containing the stock data with the calculated moving average.
+    """
     query = """
         SELECT *,
-               AVG(Close) OVER (ORDER BY Date ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) AS moving_avg
+            AVG(close) OVER (ORDER BY date ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) AS moving_avg
         FROM stock_base
-        ORDER BY `year` DESC, Date DESC
+        ORDER BY `date` DESC
     """
     stock_with_moving_avg = spark.sql(query)
     stock_with_moving_avg.createOrReplaceTempView("stock_with_moving_avg")
@@ -14,6 +23,15 @@ def calculate_moving_average(spark: SparkSession):
 
 
 def add_actions(spark: SparkSession):
+    """
+    Add buy/sell actions based on the closing price and the moving average.
+
+    Args:
+        spark (SparkSession): The Spark session.
+
+    Returns:
+        DataFrame: A Spark DataFrame containing the stock data with added action column.
+    """
     actions_query = """
         SELECT *,
                CASE
@@ -30,6 +48,15 @@ def add_actions(spark: SparkSession):
 
 
 def update_holdings(spark: SparkSession):
+    """
+    Update holdings based on the buy/sell actions.
+
+    Args:
+        spark (SparkSession): The Spark session.
+
+    Returns:
+        DataFrame: A Spark DataFrame containing the stock data with updated holdings.
+    """
     holdings_query = """
         SELECT *,
                SUM(CASE
@@ -46,6 +73,15 @@ def update_holdings(spark: SparkSession):
 
 
 def calculate_returns(spark: SparkSession):
+    """
+    Calculate daily and cumulative returns based on the buy/sell actions and holdings.
+
+    Args:
+        spark (SparkSession): The Spark session.
+
+    Returns:
+        DataFrame: A Spark DataFrame containing the stock data with calculated daily and cumulative returns.
+    """
     returns_query = """
         SELECT *,
                CASE

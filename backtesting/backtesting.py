@@ -1,11 +1,8 @@
-import matplotlib.pyplot as plt
-import pandas as pd
-import utilities as ut
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import avg, col, to_date, year
 import preparation
 import transformation
+import utilities as ut
 import visualization
+from pyspark.sql import SparkSession
 
 
 def main():
@@ -26,20 +23,22 @@ def main():
     stock_with_moving_avg.show(truncate=1000)
     # partition = 1
     stock_with_moving_avg.repartition(1).write.csv(
-        f"{transformation_dir}/stock_with_moving_avg", mode="overwrite"
+        f"{transformation_dir}/stock_with_moving_avg", mode="overwrite", header=True
     )
 
     result_with_actions = transformation.add_actions(spark)
     result_with_actions.repartition(1).write.csv(
-        f"{transformation_dir}/result_with_actions", mode="overwrite"
+        f"{transformation_dir}/result_with_actions", mode="overwrite", header=True
     )
     result_with_strategy = transformation.update_holdings(spark)
     result_with_strategy.repartition(1).write.csv(
-        f"{transformation_dir}/result_with_strategy", mode="overwrite"
+        f"{transformation_dir}/result_with_strategy", mode="overwrite", header=True
     )
     result_with_cumulative_returns = transformation.calculate_returns(spark)
     result_with_cumulative_returns.repartition(1).write.csv(
-        f"{transformation_dir}/result_with_cumulative_returns", mode="overwrite"
+        f"{transformation_dir}/result_with_cumulative_returns",
+        mode="overwrite",
+        header=True,
     )
     pandas_df = result_with_cumulative_returns.toPandas()
     print(pandas_df.head(10))
